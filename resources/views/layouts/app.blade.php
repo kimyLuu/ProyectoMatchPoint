@@ -13,8 +13,13 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+            <!-- Otros enlaces y metadatos -->
+      @stack('styles') <!-- Aquí se cargarán los estilos -->
     </head>
     <body class="font-sans antialiased">
+          <!-- Otros elementos del body -->
+    @stack('scripts') <!-- Aquí se cargarán los scripts -->
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @include('layouts.navigation')
 

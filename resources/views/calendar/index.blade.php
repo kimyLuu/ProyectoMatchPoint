@@ -1,52 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario de Reservas</title>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/locales/es.js"></script>
-</head>
-<body>
-<div style="margin-bottom: 20px;">
-    <label for="courtFilter">Filtrar por pista:</label>
-    <select id="courtFilter">
-        <option value="">Todas</option>
-        @foreach ($courts as $court)
-            <option value="{{ $court->id }}">{{ $court->name }}</option>
-        @endforeach
-    </select>
-</div>
-    <div id="calendar"></div>
+@extends('layouts.app')
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'es',
-            events: @json($events),
-            eventClick: function (info) {
-                if (confirm('¿Deseas editar esta reserva?')) {
-                  window.location.href = `/reservations/${info.event.id}/edit`;
-                 }
-            },
-        });
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+            <div class="card-header">{{ __('Calendario de Reservas de Padel') }}</div>
+
+
+                <div class="card-body">
+                    <div id='calendar'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@push('scripts')
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var initialLocaleCode = 'es';
+        const calendarEl = document.getElementById('calendar');
+        
+        var eventsData = @json($events);
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          
+            initialView: 'dayGridMonth', // Vista semanal con horas
+                slotDuration: '00:30:00', // Intervalos de 30 minutos
+                slotMinTime: '08:00:00', // Hora mínima (8:00 AM)
+                slotMaxTime: '21:00:00', // Hora máxima (9:00 PM)
+            headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                businessHours: true,
+                businessHours: [ 
+                    {
+                        daysOfWeek: [ 1, 2, 3, 4, 5 ], // Lunes a Viernes
+                        startTime: '08:00', 
+                        endTime: '21:00' 
+                    }
+                ],
+
+           locale: initialLocaleCode, // Configura el idioma en español
+                events: eventsData, // Pasa los eventos desde el servidor
+                eventClick: function(info) {
+                    // Redirige a la página de edición de la reserva
+                    if (confirm('¿Deseas editar esta reserva?')) {
+                        window.location.href = `/reservations/${info.event.extendedProps.reservation_id}/edit`;
+                    }
+                },
+                eventColor: 'blue', // Color para los eventos
+                eventTextColor: 'white', // Color de texto de los eventos         
+                allDaySlot: false, // Desactivar la opción de todo el día
+                events: eventsData // Eventos cargados desde el backend
+            });
+          
 
         calendar.render();
+    });
+</script>
 
-        // Filtro por pista
-        document.getElementById('courtFilter').addEventListener('change', function () {
-            var courtId = this.value;
-            var filteredEvents = courtId
-                ? @json($events).filter(event => event.extendedProps.court_id == courtId)
-                : @json($events);
+@endpush
+@endsection
 
-            calendar.removeAllEvents();
-            calendar.addEventSource(filteredEvents);
-        });
-        
-    </script>
-</body>
-</html>
