@@ -5,6 +5,7 @@
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CourtController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckAdmin;
@@ -73,4 +74,5 @@ Route::middleware(['auth', CheckAdmin::class])->group(function () {
 });
 
 
+Route::get('/send-reminders', [ReminderController::class, 'sendReminders']);
 require __DIR__.'/auth.php';
