@@ -24,8 +24,9 @@
 @push('scripts')
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
+    
     document.addEventListener('DOMContentLoaded', function() {
         var initialLocaleCode = 'es';
         const calendarEl = document.getElementById('calendar');
@@ -34,7 +35,7 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
           
-            initialView: 'dayGridMonth', // Vista semanal con horas
+            initialView: 'dayGridMonth', 
                 slotDuration: '00:30:00', // Intervalos de 30 minutos
                 slotMinTime: '08:00:00', // Hora mínima (8:00 AM)
                 slotMaxTime: '21:00:00', // Hora máxima (9:00 PM)
@@ -54,12 +55,17 @@
 
            locale: initialLocaleCode, // Configura el idioma en español
                 events: eventsData, // Pasa los eventos desde el servidor
+                dateClick: function(info) {
+                    // Redirige al formulario de creación con la fecha seleccionada
+                     window.location.href = `/reservations/create?date=${info.dateStr}`;
+                },          
                 eventClick: function(info) {
                     // Redirige a la página de edición de la reserva
-                    if (confirm('¿Deseas editar esta reserva?')) {
+                    if (info.event.extendedProps.reservation_id) {
                         window.location.href = `/reservations/${info.event.extendedProps.reservation_id}/edit`;
                     }
                 },
+                
                 eventColor: 'blue', // Color para los eventos
                 eventTextColor: 'white', // Color de texto de los eventos         
                 allDaySlot: false, // Desactivar la opción de todo el día

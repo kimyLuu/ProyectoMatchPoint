@@ -1,5 +1,17 @@
 @extends('layouts.app')
 
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 @section('content')
 <div class="container">
     <h1>Editar Reserva</h1>
@@ -28,7 +40,8 @@
             <label for="duration">Duración (min):</label>
             <input type="number" name="duration" id="duration" class="form-control" value="{{ $reservation->duration }}">
         </div>
-        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <button type="submit" class="btn btn-primary">Actualizar Reserva</button>
     </form>
 </div>
 @endsection
+

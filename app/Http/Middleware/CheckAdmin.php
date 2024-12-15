@@ -19,9 +19,14 @@ class CheckAdmin
         if (Auth::check() && Auth::user()->role == 'admin') {
             return $next($request);
         }
-        
-       // Redirige si no es admin
-       return redirect('/dashboard')->with('error', 'No tienes permisos para acceder.');
+       // Permitir acceso a la edición de reservas si es cliente
+        if (Auth::user()->role == 'client' && $request->is('reservations/*/edit')) {
+            return $next($request);
+        }
+
+        // Redirige si no cumple las condiciones
+        return redirect('/dashboard')->with('error', 'No tienes permisos para acceder.');
+       
     }
 }
 

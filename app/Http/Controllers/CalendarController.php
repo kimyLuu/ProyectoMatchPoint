@@ -21,6 +21,7 @@ class CalendarController extends Controller
                'title' => $reservation->court->name, // Título con el nombre de la cancha
                 'start' => $reservation->date . 'T' . $reservation->time, // Fecha y hora de inicio
                 'end' => date('Y-m-d\TH:i:s', strtotime($reservation->date . 'T' . $reservation->time . '+' . $reservation->duration . ' minutes')), // Calcular la hora de fin basándonos en la duración
+                'reservation_id' => $reservation->id, 
                 'color' => $reservation->status === 'confirmed' ? 'green' : 'orange', // Color según el estado de la reserva
                 'extendedProps' => [
                     'reservation_id' => $reservation->id, // ID de la reserva
@@ -30,9 +31,11 @@ class CalendarController extends Controller
         });
 
        // Retornar la vista con los eventos y las canchas
-       return view('calendar.index', [
+       /*return view('calendar.index', [
         'events' => json_encode($events, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT), // Pasamos los eventos al frontend
         'courts' => $courts, // En caso de necesitar las canchas
-    ]);
+    ]);*/
+    // Retornar la vista con los eventos
+    return view('calendar.index', ['events' => $events]);
     }
 }
