@@ -98,7 +98,7 @@ class UserController extends Controller
 
         // Actualizar el usuario con los datos validados
         $user->update($validatedData);
-
+       
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 

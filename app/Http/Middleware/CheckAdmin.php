@@ -5,29 +5,34 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckAdmin
 {
-   /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+    /**
+     * Maneja la solicitud entrante.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role == 'admin') {
-            return $next($request);
-        }
-       // Permitir acceso a la edición de reservas si es cliente
-        if (Auth::user()->role == 'client' && $request->is('reservations/*/edit')) {
-            return $next($request);
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return $next($request); // Acceso completo para el admin
         }
 
-        // Redirige si no cumple las condiciones
+        if ($user->role === 'client') {
+            // Permitir acceso a estas rutas para clientes
+            if (
+                $request->is('calendar') || 
+                $request->is('reservations') || 
+                $request->is('reservations/create') || 
+                $request->is('reservations/*/edit') || 
+                $request->is('reservations/*/payment')
+            ) {
+                return $next($request);
+            }
+        }
+
+        // Redirigir al dashboard si no tiene permisos
         return redirect('/dashboard')->with('error', 'No tienes permisos para acceder.');
-       
     }
 }
-
-

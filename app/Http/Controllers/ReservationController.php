@@ -16,34 +16,40 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with('user', 'court')->get();
-        //dd($reservations); 
-        return view('reservations.index', compact('reservations'));
+        if (auth()->user()->role === 'admin') {
+            $reservations = Reservation::with('user', 'court')->get();
+            return view('reservations.index', compact('reservations'));
+        }
+
+    return redirect()->route('reservations.client.index'); 
+    
     }
 
     /**
      * Mostrar el formulario para crear una nueva reserva.
      */
     public function create(Request $request)
-    {
-       // $users = User::all(); // Usuarios disponibles
-        $courts = Court::all();
-        $selectedDate = $request->query('date', null); // Obtener la fecha desde la URL (si existe)
-    
+{
+    $selectedDate = $request->query('date', now()->format('Y-m-d'));
+    $timeSlots = $this->generateTimeSlots();
+    $courts = Court::all();
 
-    // Generar intervalos de 30 minutos
-        $timeSlots = [];
-        $start = new \DateTime('08:00');
-        $end = new \DateTime('21:00');
+    return view('reservations.create', compact('selectedDate', 'timeSlots', 'courts'));
+}
 
-        while ($start <= $end) {
-            $timeSlots[] = $start->format('H:i');
-            $start->modify('+30 minutes');
-        }
+private function generateTimeSlots()
+{
+    $start = strtotime('08:00');
+    $end = strtotime('21:00');
+    $interval = 30 * 60;
 
-        return view('reservations.create', compact('courts', 'timeSlots','selectedDate'));
-       // return view('reservations.create', compact('users', 'courts'));
+    $timeSlots = [];
+    for ($current = $start; $current <= $end; $current += $interval) {
+        $timeSlots[] = date('H:i', $current);
     }
+
+    return $timeSlots;
+}
 
     /**
      * Store a newly created resource in storage.
@@ -207,5 +213,17 @@ class ReservationController extends Controller
         }
 
     }
+
+
+    /**
+     * 
+     */
+    public function clientIndex()
+{
+    // Mostrar solo las reservas del usuario autenticado
+    $reservations = Reservation::where('user_id', auth()->id())->with('court')->get();
+
+    return view('reservations.index', compact('reservations'));
+}
 
 }

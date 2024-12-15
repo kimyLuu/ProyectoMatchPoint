@@ -35,13 +35,14 @@
                    value="{{ old('date', $selectedDate) }}" required>
         </div>
         <div class="mb-3">
-            <label for="time" class="form-label">Hora</label>
-            <select name="time" id="time" class="form-select" required>
-                @foreach ($timeSlots as $time)
-                    <option value="{{ $time }}">{{ $time }}</option>
-                @endforeach
-            </select>
-        </div>
+    <label for="time" class="form-label">Hora</label>
+    <select name="time" id="time" class="form-select" required>
+        <option value="">Seleccione un horario</option>
+        @foreach ($timeSlots as $time)
+            <option value="{{ $time }}">{{ $time }}</option>
+        @endforeach
+    </select>
+</div>
         <div class="mb-3">
             <label for="duration" class="form-label">Duración (minutos)</label>
             <select name="duration" id="duration" class="form-select" required>

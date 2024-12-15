@@ -57,7 +57,7 @@
                 events: eventsData, // Pasa los eventos desde el servidor
                 dateClick: function(info) {
                     // Redirige al formulario de creación con la fecha seleccionada
-                     window.location.href = `/reservations/create?date=${info.dateStr}`;
+                 window.location.href = `/reservations/create?date=${info.dateStr}`;
                 },          
                 eventClick: function(info) {
                     // Redirige a la página de edición de la reserva

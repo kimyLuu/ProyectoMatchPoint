@@ -33,7 +33,7 @@
                         <form action="{{ route('reservations.destroy', $reservation->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <button type="submit" class="btn btn-danger" onclick="return confirmDelete()">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -41,4 +41,10 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function confirmDelete() {
+        return confirm('¿Estás seguro de que deseas eliminar esta Reserva? Esta acción no se puede deshacer.');
+    }
+</script>
 @endsection
