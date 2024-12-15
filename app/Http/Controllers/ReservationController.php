@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Court;
 use App\Models\Reservation;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
@@ -16,14 +18,14 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role === 'admin') {
-            $reservations = Reservation::with('user', 'court')->get();
-            return view('reservations.index', compact('reservations'));
-        }
-
-    return redirect()->route('reservations.client.index'); 
-    
+        $reservations = Reservation::with('user', 'court')->get();
+        //dd($reservations);
+        return view('reservations.index', compact('reservations'));
     }
+
+
+
+
 
     /**
      * Mostrar el formulario para crear una nueva reserva.
@@ -143,8 +145,11 @@ private function generateTimeSlots()
         $reservation->date = $date;
         $reservation->time = $time;
         $reservation->duration = $request->input('duration');
-        $reservation->status = $request->input('status'); 
-        $reservation->save();
+       
+        // Mantener el estado actual
+        $reservation->status = $reservation->status;
+
+         $reservation->save();
 
         // Redirigir con mensaje de éxito
         return redirect()->route('reservations.index')->with('success', 'Reserva actualizada con éxito.');
@@ -216,14 +221,76 @@ private function generateTimeSlots()
 
 
     /**
+         * 
+         */
+        public function clientIndex()
+    {
+        // Mostrar solo las reservas del usuario autenticado
+        $reservations = Reservation::where('user_id', auth()->id())->with('court')->get();
+
+        return view('reservations.index', compact('reservations'));
+    }
+
+    /**
+     * Metodo de cancelar una reserva
      * 
      */
-    public function clientIndex()
-{
-    // Mostrar solo las reservas del usuario autenticado
-    $reservations = Reservation::where('user_id', auth()->id())->with('court')->get();
+    public function cancel($id)
+    {
+        // Obtener la reserva por su ID
+        $reservation = Reservation::findOrFail($id);
+    
+        // Obtener la fecha y hora actual
+        $now = now();
+    
+        // Verificar si faltan al menos 24 horas para la fecha y hora de la reserva
+        $reservationDateTime = Carbon::parse($reservation->date . ' ' . $reservation->time);
 
-    return view('reservations.index', compact('reservations'));
+        // Depurar los valores de tiempo
+        Log::info('Fecha y hora actual: ' . $now);
+        Log::info('Fecha y hora de la reserva: ' . $reservationDateTime);
+        Log::info('Diferencia en horas: ' . $now->diffInHours($reservationDateTime, false));
+        
+        // Condición: La reserva ya pasó
+    if ($reservationDateTime->isPast()) {
+        return redirect()->back()->with('error', 'La reserva ya ha pasado, no puede ser cancelada.');
+    }
+          // Condición: Faltan menos de 24 horas
+    if ($now->diffInHours($reservationDateTime, false) < 24) {
+        return redirect()->back()->with('error', 'La reserva solo puede cancelarse al menos 24 horas antes.');
+    }
+            // Realizar el reembolso
+    $this->processRefund($reservation);
+
+    // Eliminar la reserva
+    $reservation->delete();
+
+    // Redirigir con mensaje de éxito
+    return redirect()->route('reservations.index')->with('success', 'La reserva ha sido cancelada y el reembolso procesado con éxito.');
+
+    
 }
+/**
+ * 
+ */
+public function showCancel($id)
+{
+    // Obtener la reserva por su ID
+    $reservation = Reservation::findOrFail($id);
 
+    // Mostrar la vista de confirmación de cancelación
+    return view('reservations.cancel', compact('reservation'));
+}
+    
+    /**
+     * Simula el proceso de reembolso.
+     * @param  Reservation $reservation
+     */
+    protected function processRefund($reservation)
+    {
+        // Aquí se implementaría la integración con un sistema de pago.
+        // Ejemplo: Lógica de reembolso del pago.
+        // Simulación de registro de reembolso:
+        Log::info('Reembolso procesado para la reserva ID: ' . $reservation->id);
+    }
 }

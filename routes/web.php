@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CourtController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReservationController;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
 
 // Dashboard (solo para usuarios autenticados y verificados)
 Route::get('/dashboard', function () {
@@ -60,19 +60,39 @@ Route::middleware('auth')->group(function () {
         Route::post('/reservations/{id}/confirm-payment', [ReservationController::class, 'confirmPayment'])->name('reservations.confirmPayment');
     });
 });
-Route::middleware(['auth', CheckAdmin::class])->group(function () {
-    Route::resource('users', UserController::class);
-});
-Route::resource('reservations', ReservationController::class);
+        Route::middleware(['auth', CheckAdmin::class])->group(function () {
+            Route::resource('users', UserController::class);
+        });
+        Route::resource('reservations', ReservationController::class);
 
 
 
 
-// Rutas específicas para administradores para gestionar las pistas
-Route::middleware(['auth', CheckAdmin::class])->group(function () {
-    Route::resource('courts', CourtController::class);
-});
+        // Rutas específicas para administradores para gestionar las pistas
+        Route::middleware(['auth', CheckAdmin::class])->group(function () {
+            Route::resource('courts', CourtController::class);
+        });
+
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->middleware(['auth'])->name('dashboard');
 
 
-Route::get('/send-reminders', [ReminderController::class, 'sendReminders']);
+        Route::get('/reservations/{id}/cancel', [ReservationController::class, 'showCancel'])->name('reservations.showCancel');
+        Route::delete('/reservations/{id}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+
+        Route::get('/send-reminders', [ReminderController::class, 'sendReminders']);
+
+        Route::get('/contacto', function () {
+            return view('pages.contacto');
+        })->name('contacto');
+
+
+// Vista Ser Socio 
+Route::get('/ser-socio', function () {
+    return view('pages.serSocio');
+})->name('serSocio');
+
+
+
 require __DIR__.'/auth.php';

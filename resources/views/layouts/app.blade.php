@@ -7,6 +7,7 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -14,8 +15,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-            <!-- Otros enlaces y metadatos -->
-      @stack('styles') <!-- Aquí se cargarán los estilos -->
+         <!-- Otros enlaces y metadatos -->
+    @stack('styles') <!-- Aquí se cargarán los estilos -->
     </head>
     <body class="font-sans antialiased">
           <!-- Otros elementos del body -->
@@ -34,7 +35,10 @@
 
             <!-- Page Content -->
             <main>
-             
+                {{-- Prioridad al slot de componentes Blade --}}
+                {{ $slot ?? '' }}
+
+                {{-- Si no hay slot, utiliza @yield para vistas tradicionales --}}
                 @yield('content')
             </main>
         </div>

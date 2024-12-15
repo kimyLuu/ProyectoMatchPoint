@@ -1,4 +1,10 @@
 <x-guest-layout>
+   <!-- Encabezado con el logo personalizado y clickeable -->
+   <div class="flex justify-center mt-6">
+        <a href="{{ url('/') }}">
+            <img src="{{ asset('img/Logo.png') }}" alt="Logo MatchPoint" class="h-20">
+        </a>
+    </div>
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
