@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,94 +13,97 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            color: #2c3e50;
         }
 
         /* Imagen de ancho completo */
         #hero-image {
             width: 100%;
-            height: auto;
-            margin: 0 auto;
-            display: block;
-            margin-top: 80px; 
+            height: 400px;
+            background: url('{{ asset("img/Horizontal.jpg") }}') no-repeat center center/cover;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
         }
 
-        /* Sección de Equipos */
-        #equipos {
+        #hero-image h1 {
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        /* Sección de Equipos y Gastrobar */
+        section {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
             display: flex;
             align-items: center;
-            gap: 90px;
-            margin: 50px 0;
-           
+            justify-content: space-between;
+            gap: 30px;
         }
 
-        #equipos img {
-            flex: 0 0 50%; /* Imagen ocupa el 50% del ancho */
-            max-width: 500px; /* Limita el tamaño máximo */
-            border-radius: 20px;
-            
-            
+        section img {
+            flex: 0 0 45%;
+            border-radius: 15px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        #equipos .content {
-            flex: 1; /* El contenido ocupa el espacio restante */
+        section .content {
+            flex: 1;
+            text-align: center;
         }
 
-        /* Sección de Gastrobar */
-        #gastrobar {
-            display: flex;
-            align-items: center;
-            flex-direction: row-reverse; /* Imagen a la derecha */
-            gap: 50px;
-            margin: 50px 0;
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
 
-        #gastrobar img {
-            flex: 0 0 80%; /* Imagen ocupa el 50% del ancho */
-            max-width: 500px; /* Limita el tamaño máximo */
-            border-radius: 20px;
+        section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
-        #gastrobar .content {
-            flex: 50; /* El contenido ocupa el espacio restante */
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+        }
+
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <!-- Imagen de ancho completo -->
+    <!-- Imagen de ancho completo con título -->
     <header>
-        <img id="hero-image" src="{{ asset('img/Horizontal.jpg') }}" alt="Imagen principal de pádel">
+        <div id="hero-image">
+            <h1>MatchPoint</h1>
+        </div>
     </header>
 
     <!-- Navegación -->
     <nav class="navigation">
         <div class="container">
             <ul class="menu">
-        
                 @if (Route::has('login'))
                     @auth
-                        <li><a href="{{ url('/dashboard') }}" class="btn-link">matchpoint</a></li>
+                        <li><a href="{{ url('/dashboard') }}" class="btn-link">Dashboard</a></li>
                     @else
                         <li><a href="{{ route('login') }}" class="btn-link">Iniciar sesión</a></li>
                         @if (Route::has('register'))
                             <li><a href="{{ route('register') }}" class="btn-link">Registrarse</a></li>
                         @endif
                     @endauth
-                    @auth
-                        <!-- Menú visible para todos los usuarios autenticados -->
-                        @if(Auth::user()->role == 'client' || Auth::user()->role == 'admin')
-                            <li><a href="{{ route('calendar.index') }}">Reserva</a></li>
-                        @endif
-
-                        <!-- Menú exclusivo para administradores -->
-                        @if(Auth::user()->role == 'admin')
-                            <li><a href="{{ route('reservations.index') }}">Gestión de Reservas</a></li>
-                        @endif
-                    @endauth
                 @endif
-                
-
-               
- 
             </ul>
         </div>
     </nav>
@@ -111,15 +114,14 @@
         <section id="equipos">
             <img src="{{ asset('img/equipo.jpg') }}" alt="Equipos de pádel">
             <div class="content">
-                <h2 class="section-title">Equipos de Pádel</h2>
+                <h2>Equipos de Pádel</h2>
                 <p>Encuentra los mejores equipos para disfrutar al máximo.</p>
-                <p>
-                <strong>¿QUÉ PODEMOS OFRECER?</strong><br>
-                - El proyecto y la construcción de las pistas de pádel (homologadas y con certificado de calidad de todos los materiales).<br>
-                - Gestión y funcionamiento de las pistas a través de «pistas inteligentes».<br>
-                - Publicidad y promoción del servicio, a través de acuerdos con escuelas e instituciones locales, cursos, torneos.<br>
-                - Mantenimiento y limpieza de las instalaciones.
-            </p>
+                <p><strong>¿QUÉ PODEMOS OFRECER?</strong><br>
+                    - Alquiler de pistas<br>
+                    - Venta de material<br>
+                    - Clases, torneos y entrenamientos<br>
+                    - Mantenimiento de instalaciones
+                </p>
             </div>
         </section>
 
@@ -127,8 +129,17 @@
         <section id="gastrobar">
             <img src="{{ asset('img/gastrobar.jpg') }}" alt="Gastrobar">
             <div class="content">
-                <h2 class="section-title">Gastrobar</h2>
+                <h2>Gastrobar</h2>
                 <p>Disfruta de la mejor comida después de tu partida.</p>
+            </div>
+        </section>
+
+         <!-- Salud -->
+         <section id="salud">
+            <img src="{{ asset('img/Horizontal.jpg') }}" alt="juego">
+            <div class="content">
+                <h2>Salud</h2>
+                <p>"El pádel no solo fortalece tu cuerpo, sino también tu mente; es la forma perfecta de cuidar tu salud mientras te diviertes.".</p>
             </div>
         </section>
     </main>
